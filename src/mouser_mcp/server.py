@@ -18,6 +18,8 @@ from functools import wraps
 from typing import Any
 
 from fastmcp import FastMCP
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from .api import cart, order, order_history, search
 from .client import get_client_config
@@ -47,6 +49,11 @@ mcp = FastMCP(
     Rate limits: 50 results per search, 30 calls/minute, 1000 calls/day
     """,
 )
+
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health(request: Request):
+    return JSONResponse({"status": "ok", "service": "mouser-mcp"})
 
 
 def timing_middleware(func: Callable) -> Callable:
